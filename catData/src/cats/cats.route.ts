@@ -47,7 +47,7 @@ router.get("/cats/:id", (req: express.Request, res: express.Response) => {
 });
 
 //* Create: 새로운 고양이 추가
-router.post("/cats", (req, res) => {
+router.post("/cats", (req: express.Request, res: express.Response) => {
   try {
     const data = req.body;
     // console.log(data);
@@ -55,6 +55,78 @@ router.post("/cats", (req, res) => {
     res.status(201).send({
       success: true,
       data,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error?.message,
+    });
+  }
+});
+
+//* Update 고양이 데이터 업데이트 -> Put
+router.put("/cats/:id", (req: express.Request, res: express.Response) => {
+  try {
+    const params = req.params;
+    const body = req.body;
+    let result;
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        cat = body;
+        result = cat;
+      }
+    });
+
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error?.message,
+    });
+  }
+});
+
+//* Update 고양이 데이터 부분적으로 업데이트 -> Patch
+router.patch("/cats/:id", (req: express.Request, res: express.Response) => {
+  try {
+    const params = req.params;
+    const body = req.body;
+    let result;
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        cat = { ...cat, ...body }; // 부분적으로 수정
+        result = cat;
+      }
+    });
+
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result,
+      },
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error?.message,
+    });
+  }
+});
+
+//* Delete 고양이 데이터 삭제 -> Delete
+router.delete("/cats/:id", (req: express.Request, res: express.Response) => {
+  try {
+    const params = req.params;
+    const newCat = Cat.filter((cat) => cat.id !== params.id);
+
+    res.status(200).send({
+      success: true,
+      data: newCat,
     });
   } catch (error) {
     res.status(400).send({
