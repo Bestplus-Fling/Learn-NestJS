@@ -2,26 +2,28 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Put,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
+import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 
 @Controller('cats')
+@UseInterceptors(SuccessInterceptor)
+@UseFilters(HttpExceptionFilter) // 모든 api에서 사용할 거라면 class 상단에 데코레이터를 추가
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Get()
-  @UseFilters(HttpExceptionFilter) // 모든 api에서 사용할 거라면 class 상단에 데코레이터를 추가
   getAllCat() {
-    throw new HttpException('api dose not working', 401);
-    return 'all cat';
+    console.log('hello controller');
+    return { cats: 'get all cat api' };
   }
 
   @Get(':id')
