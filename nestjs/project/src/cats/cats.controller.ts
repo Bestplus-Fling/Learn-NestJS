@@ -3,6 +3,8 @@ import {
   Delete,
   Get,
   HttpException,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -23,7 +25,12 @@ export class CatsController {
   }
 
   @Get(':id')
-  getOneCat() {
+  getOneCat(@Param('id', ParseIntPipe) param) {
+    // ParseIntPipe를 사용했을 때, 숫자가 아닌 문자로 api를 요청했을 때 validation error 발생(유효성까지 검증 가능)
+    // 원래 param id type은 string
+    // pipes를 이용하여 number로 변환
+    console.log(param);
+    console.log(typeof param);
     return 'one cat';
   }
 
