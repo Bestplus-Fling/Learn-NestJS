@@ -49,3 +49,25 @@ nest g service <app 명>
 ```bash
   npm i --save class-validator class-transformer
 ```
+
+## 비밀번호 암호화
+
+- 필요한 라이브러리 설치
+
+```bash
+  npm i bcrypt
+  npm i -D @types/bcrypt
+```
+
+- import
+
+```ts
+import * as bcrypt from 'bcrypt';
+```
+
+- 암호화에 사용
+
+```ts
+// 비밀번호 암호화
+const hashedPassword = await bcrypt.hash(password, 10);
+```
