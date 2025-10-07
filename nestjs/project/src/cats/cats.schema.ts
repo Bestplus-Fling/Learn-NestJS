@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, SchemaOptions } from 'mongoose';
 
 export type CatDocument = HydratedDocument<Cat>;
@@ -11,17 +12,32 @@ const options: SchemaOptions = {
 
 @Schema(options)
 export class Cat {
+  @ApiProperty({
+    example: 'test@example.com',
+    description: 'email',
+    required: true,
+  })
   @Prop({
     required: true,
     unique: true,
   })
   email: string;
 
+  @ApiProperty({
+    example: 'testuser',
+    description: 'name',
+    required: true,
+  })
   @Prop({
     required: true,
   })
   name: string;
 
+  @ApiProperty({
+    example: '1q2w3e!!',
+    description: 'password',
+    required: true,
+  })
   @Prop({
     required: true,
   })
