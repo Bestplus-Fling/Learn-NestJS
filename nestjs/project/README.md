@@ -71,3 +71,105 @@ import * as bcrypt from 'bcrypt';
 // 비밀번호 암호화
 const hashedPassword = await bcrypt.hash(password, 10);
 ```
+
+## API 성능을 개선해야 할 때
+
+- Nest는 기본적으로 Express.js 프레임워크를 사용
+- 하지만 Fastify와 같은 다른 라이브러리와의 호환성도 제공
+- 따라서 성능이 중요한 API는 Fastify를 사용해 개선할 수 있음
+  1. 많이 사용하는 Express로 개발
+  2. 나중에 Fastify로 리팩토링
+
+## Docs 추가(Swagger)
+
+- install
+
+```bash
+  npm install --save @nestjs/swagger
+```
+
+- `main.ts`에 추가
+
+```ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
+  // ============ 추가된 부분 ============
+  const config = new DocumentBuilder()
+    .setTitle('Cats example')
+    .setDescription('The cats API description')
+    .setVersion('1.0.0')
+    .addTag('cats')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, documentFactory);
+  // ====================================
+  await app.listen(process.env.PORT!);
+}
+bootstrap();
+```
+
+### endpoint에 설명이 필요할 때
+
+- `src/cats/cats.controller.ts`
+
+```ts
+...
+  // ApiOperation을 통해 docs Endpoint에 대한 설명 기입 가능
+  @ApiOperation({ summary: '회원가입' })
+  @Post()
+  async signUp(@Body() body: CatRequestDto) {
+    return await this.catsService.signUp(body);
+  }
+...
+```
+
+### Request Body Example Value 추가
+
+- `src/cats/dto/cats.request.dto.ts`
+  - `@ApiProperty`를 통해 예시를 추가할 수 있음
+
+```ts
+...
+  @ApiProperty({
+    example: 'test@example.com',
+    description: 'email',
+    required: true,
+  })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+...
+```
+
+### Response Description 추가
+
+- `src/cats/cats.controller.ts`
+  - `@ApiResponse`를 사용해 상태 코드와, 설명을 추가할 수 있음
+
+```ts
+...
+  @ApiResponse({
+    status: 500,
+    description: 'Server Error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '성공!',
+    type: ReadOnlyCatDto,
+  })
+  @ApiOperation({ summary: '회원가입' })
+  @Post()
+  async signUp(@Body() body: CatRequestDto) {
+    return await this.catsService.signUp(body);
+  }
+...
+```
