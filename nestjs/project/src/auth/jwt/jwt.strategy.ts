@@ -12,5 +12,5 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
   // 인증
-  async validate(payload) {}
+  // async validate(payload) {}
 }

@@ -7,11 +7,17 @@ import { CatRequestDto } from './dto/cats.request.dto';
 @Injectable()
 export class CatsRepository {
   constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+
+  async findCatByEmail(email: string): Promise<Cat | null> {
+    const cat = await this.catModel.findOne({ email });
+    return cat;
+  }
+
   // return type...?
-  async existsByEmail(email: string) {
+  async existsByEmail(email: string): Promise<boolean> {
     try {
       const result = await this.catModel.exists({ email });
-      return result;
+      return !!result;
     } catch {
       throw new HttpException('db error', 400);
     }

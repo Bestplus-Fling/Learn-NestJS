@@ -46,6 +46,8 @@ export class Cat {
   @Prop() // default가 required false이므로 지정하지 않음
   imgUrl: string;
 
+  readonly id: string;
+
   readonly readOnlyData: { id: string; email: string; name: string };
 }
 
