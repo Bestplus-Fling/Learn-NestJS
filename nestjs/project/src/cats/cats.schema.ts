@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 import { HydratedDocument, SchemaOptions } from 'mongoose';
 
 export type CatDocument = HydratedDocument<Cat>;
@@ -41,12 +42,21 @@ export class Cat {
   })
   password: string;
 
-  @Prop() // default가 required false이므로 지정하지 않음
+  @Prop({
+    default:
+      'https://raw.githubusercontent.com/amamov/teaching-nestjs-a-to-z/main/images/1.jpeg',
+  }) // default가 required false이므로 지정하지 않음
+  @IsString()
   imgUrl: string;
 
   readonly id: string;
 
-  readonly readOnlyData: { id: string; email: string; name: string };
+  readonly readOnlyData: {
+    id: string;
+    email: string;
+    name: string;
+    imgUrl: string;
+  };
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);
@@ -56,5 +66,6 @@ CatSchema.virtual('readOnlyData').get(function (this: CatDocument) {
     id: this._id.toString(),
     email: this.email,
     name: this.name,
+    imgUrl: this.imgUrl,
   };
 });
