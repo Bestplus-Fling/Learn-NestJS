@@ -6,8 +6,6 @@ export type CatDocument = HydratedDocument<Cat>;
 
 const options: SchemaOptions = {
   timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
 };
 
 @Schema(options)
