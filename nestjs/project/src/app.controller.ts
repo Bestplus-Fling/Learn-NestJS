@@ -13,8 +13,8 @@ export class AppController {
   //   console.log(param);
   //   return "hello world"
   // }
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
 }
