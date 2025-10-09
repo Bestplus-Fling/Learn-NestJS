@@ -252,3 +252,11 @@ $ nest g service auth
 ```bash
 npm install express-basic-auth
 ```
+
+## Multer를 이용한 미디어 서비스 처리
+
+- install
+
+```bash
+npm i -D @types/multer
+```
