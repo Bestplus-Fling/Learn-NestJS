@@ -244,3 +244,11 @@ $ nest g service auth
 > NestJS 공식문서의 JWT 예제는 단순한 토큰 검증 로직을 보여주기 위한 것이며, 실제 실무에서는 @nestjs/passport와 passport-jwt를 함께 사용하는 전략(Strategy) + 가드(Guard) 기반 구조가 표준적인 방식이다.
 
 > 초기에는 복잡해 보이지만, 인증 체계를 확장하거나 유지보수할 때 훨씬 유연하다.
+
+## Swagger API 보안 설정
+
+- install
+
+```bash
+npm install express-basic-auth
+```
