@@ -1,5 +1,11 @@
 # NestJS 학습
 
+#### Nest 명령어(Nest CLI) 안될 때
+
+```bash
+npm install -g @nestjs/cli
+```
+
 #### 개행문자 오류 발생시
 
 - `eslint.config.mjs`로 이동
