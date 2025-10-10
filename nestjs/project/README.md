@@ -316,10 +316,13 @@ npm i -D @types/multer
     *   **해결:** `src/cats/cats.schema.ts` 파일에서 `ref: 'comments'`를 `ref: 'Comments'`로 수정.
     *   **결과:** 이 수정 후 `GET /cats/all` 호출 시 `comments`가 올바르게 populate되어 반환됨.
 
-*   **원인 2: `ObjectId` 타입 변환의 필요성 (사용자 테스트를 통한 심화 이해)**
+*   **원인 2: `ObjectId` 타입 변환의 필요성 및 `Document` 상속 문제 (사용자 테스트를 통한 심화 이해)**
     *   **사용자 테스트:** `comments.service.ts`의 `createComment` 함수에서 `validatedAuthor.id`와 `targetCat.id` (문자열)를 `Types.ObjectId.createFromHexString()`으로 명시적으로 변환하지 않고 저장했을 때, `populate`가 작동하지 않음을 확인. 명시적 변환 시에만 작동.
-    *   **문제:** Mongoose는 `Types.ObjectId` 필드에 유효한 24자 16진수 문자열을 할당할 때 자동으로 `ObjectId` 인스턴스로 캐스팅해야 하지만, 특정 상황(버전, 설정, 필드 위치 등)에서 이 자동 캐스팅이 신뢰할 수 없게 작동하여 실제 `ObjectId`가 아닌 문자열로 저장될 수 있음.
-    *   **결론:** `_id` 필드가 아닌 다른 필드에 `ObjectId`를 저장할 때는 `Types.ObjectId.createFromHexString()`과 같이 명시적으로 `ObjectId` 인스턴스로 변환하여 저장하는 것이 가장 견고하고 안전한 방법임을 확인. 이는 `populate`가 `ObjectId` 값 간의 일치를 기반으로 작동하기 때문.
+    *   **추가 문제 발견:** 스키마 정의 시 `extends Document`를 누락하여 Mongoose가 `_id` 필드를 자동으로 추론하지 못하고, `id` 필드를 `string`으로 강제 선언하여 사용했었음. 이로 인해 `author` 및 `info` 필드에 `_id`가 아닌 `id` (string)가 전달되어 `ObjectId` 매칭에 문제가 발생.
+    *   **해결:**
+        1.  스키마 클래스에 `extends Document`를 추가하여 Mongoose가 `_id` 필드를 올바르게 관리하도록 함.
+        2.  `comments.service.ts`에서 `author`와 `info` 필드에 `validatedAuthor._id`와 `targetCat._id`를 직접 전달하거나, `Types.ObjectId.createFromHexString()`을 사용하여 `ObjectId` 인스턴스로 변환하여 저장. (기존 `id` 대신 `_id` 사용)
+    *   **결론:** `_id` 필드가 아닌 다른 필드에 `ObjectId`를 저장할 때는 `Types.ObjectId.createFromHexString()`과 같이 명시적으로 `ObjectId` 인스턴스로 변환하여 저장하는 것이 가장 견고하고 안전한 방법임을 확인. 또한, 스키마 클래스는 `Document`를 상속하여 Mongoose의 기본 `_id` 관리를 활용해야 함. 이는 `populate`가 `ObjectId` 값 간의 일치를 기반으로 작동하기 때문.
 
 ### 4. 모델 이름과 컬렉션 이름의 차이점 명확화
 
@@ -331,4 +334,4 @@ npm i -D @types/multer
 
 ---
 
-**최종 결론:** Mongoose의 `populate` 기능은 **참조하는 모델의 정확한 이름(대소문자 구분)**과 **외래키 필드의 데이터 타입(실제 `ObjectId` 인스턴스)**에 매우 엄격하다. 이 두 가지 요소를 정확히 설정해야 1:N 관계 조회가 성공적으로 이루어진다.
+**최종 결론:** Mongoose의 `populate` 기능은 **참조하는 모델의 정확한 이름(대소문자 구분)**과 **외래키 필드의 데이터 타입(실제 `ObjectId` 인스턴스)**에 매우 엄격하다. 특히 스키마 클래스가 `Document`를 상속하여 `_id` 필드를 올바르게 관리하고, `ObjectId` 참조 필드에 명시적으로 `ObjectId` 인스턴스를 전달해야 1:N 관계 조회가 성공적으로 이루어진다.
