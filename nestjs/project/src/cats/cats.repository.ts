@@ -7,10 +7,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Cat } from './cats.schema';
 import { Model, Types } from 'mongoose';
 import { CatRequestDto } from './dto/cats.request.dto';
+import { Comments } from 'src/comments/comments.schema';
 
 @Injectable()
 export class CatsRepository {
-  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  constructor(
+    @InjectModel(Cat.name) private readonly catModel: Model<Cat>,
+    @InjectModel(Comments.name) private readonly commentsModel: Model<Comments>,
+  ) {}
 
   async findCatByEmail(email: string): Promise<Cat | null> {
     const cat = await this.catModel.findOne({ email });
@@ -50,6 +54,8 @@ export class CatsRepository {
   }
 
   async findAll() {
-    return await this.catModel.find();
+    const result = await this.catModel.find().populate('comments');
+
+    return result;
   }
 }

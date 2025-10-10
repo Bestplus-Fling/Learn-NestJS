@@ -1,16 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsPositive, IsString } from 'class-validator';
-import { HydratedDocument, SchemaOptions, Types } from 'mongoose';
+import { Document, HydratedDocument, SchemaOptions, Types } from 'mongoose';
 
 export type CommentDocument = HydratedDocument<Comments>;
 
 const options: SchemaOptions = {
   timestamps: true,
+  collection: 'comments',
 };
 
 @Schema(options)
-export class Comments {
+export class Comments extends Document {
   @ApiProperty({
     description: '작성한 고양이 id',
     required: true,

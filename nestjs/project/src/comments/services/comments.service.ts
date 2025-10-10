@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentsCreateDto } from '../dto/comments.create.dto';
 import { Comments } from '../comments.schema';
 import { Model } from 'mongoose';
@@ -27,16 +23,25 @@ export class CommentsService {
     }
 
     const { contents, author } = commentData;
+
     const validatedAuthor =
       await this.catsRepository.findCatByIdWithoutPassword(author);
     if (!validatedAuthor) {
-      throw new NotFoundException(`좋아요를 한 Cat이 없습니다.`);
+      throw new NotFoundException(`작성자를 찾을 수 없습니다.`);
     }
+
     const newComment = new this.commentsModel({
-      author: validatedAuthor.id,
+      // id가 string타입일 때 MongoDB에서 조회가 안되는 문제가 있음
+      // 강제로 타입변환해서 ObjectId로 만든다.
+      // 결론: Comments Schema 생성시 `extends Document`를 하지 않고 만듬
+      // => _id가 추론되지 않아 에러가 뜨니, id로 작성했는데 결과적으로 문제가 된거임.
+      // author: Types.ObjectId.createFromHexString(validatedAuthor.id),
+      author: validatedAuthor._id,
       contents,
-      info: targetCat.id,
+      info: targetCat._id,
+      // info: Types.ObjectId.createFromHexString(targetCat.id),
     });
+
     return await newComment.save();
   }
 

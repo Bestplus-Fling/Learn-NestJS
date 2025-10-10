@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { HydratedDocument, SchemaOptions } from 'mongoose';
+import { Document, HydratedDocument, SchemaOptions, Types } from 'mongoose';
+import { Comments } from 'src/comments/comments.schema';
 
 export type CatDocument = HydratedDocument<Cat>;
 
@@ -10,7 +11,7 @@ const options: SchemaOptions = {
 };
 
 @Schema(options)
-export class Cat {
+export class Cat extends Document {
   @ApiProperty({
     example: 'test@example.com',
     description: 'email',
@@ -49,23 +50,35 @@ export class Cat {
   @IsString()
   imgUrl: string;
 
-  readonly id: string;
-
   readonly readOnlyData: {
     id: string;
     email: string;
     name: string;
     imgUrl: string;
+    comments: Comments[];
   };
+
+  readonly comments: Comments[];
 }
 
-export const CatSchema = SchemaFactory.createForClass(Cat);
+const _CatSchema = SchemaFactory.createForClass(Cat);
 
-CatSchema.virtual('readOnlyData').get(function (this: CatDocument) {
+_CatSchema.virtual('readOnlyData').get(function (this: Cat) {
   return {
-    id: this._id.toString(),
+    id: this.id,
     email: this.email,
     name: this.name,
     imgUrl: this.imgUrl,
+    comments: this.comments,
   };
 });
+
+_CatSchema.virtual('comments', {
+  ref: 'Comments',
+  localField: '_id',
+  foreignField: 'info',
+});
+_CatSchema.set('toObject', { virtuals: true });
+_CatSchema.set('toJSON', { virtuals: true });
+
+export const CatSchema = _CatSchema;
