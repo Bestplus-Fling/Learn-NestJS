@@ -56,4 +56,4 @@ export class Comments {
   info: Types.ObjectId;
 }
 
-export const CommentSchema = SchemaFactory.createForClass(Comments);
+export const CommentsSchema = SchemaFactory.createForClass(Comments);

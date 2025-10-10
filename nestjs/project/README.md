@@ -15,6 +15,28 @@ npm install -g @nestjs/cli
   'prettier/prettier': ['error', { endOfLine: 'auto' }],
 ```
 
+#### Error Type 추론
+
+- TypeScript 4.4부터 `catch`문의 `error` type이 any에서 unknown으로 변경됨
+- 따라서 error 내부 인자가 있는지 없는지 사용자가 직접 확인해야 함
+
+```ts
+// src/common/utils/guards.ts
+// error가 message: string 속성을 가진 객체인지 확인하는 타입 가드
+interface ErrorWithMessage {
+  message: string;
+}
+
+const isErrorWithMessage = (error: unknown): error is ErrorWithMessage => {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as ErrorWithMessage).message === 'string'
+  );
+};
+```
+
 ## CLI로 추가
 
 - cli에서
