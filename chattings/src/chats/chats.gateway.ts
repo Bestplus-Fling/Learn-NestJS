@@ -49,9 +49,12 @@ export class ChatsGateway
   ) {
     // emit으로 보낸 데이터는 on으로 받을 수 있음
     // socket.on('new_user', username)
-    console.log(socket.id);
-    console.log(username);
-    socket.emit('hello_user', 'hello ' + username);
-    return 'hello world';
+    // console.log(socket.id);
+    // console.log(username);
+    // socket.emit('hello_user', 'hello ' + username);
+
+    // username을 db에 적재
+    socket.broadcast.emit('user_connected', username);
+    return username;
   }
 }
