@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ChatsModule } from './chats/chats.module';
 import mongoose from 'mongoose';
 
 @Module({
@@ -11,6 +12,7 @@ import mongoose from 'mongoose';
       isGlobal: true, // 다른 모듈에서 import할 필요가 없음
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI!),
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
