@@ -38,7 +38,7 @@ export class ChatsGateway
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
-    this.logger.log(`connected : ${socket.id} ${socket.nsp.name}`);
+    this.logger.log(`dis connected : ${socket.id} ${socket.nsp.name}`);
   }
 
   // front browser에서 보낸 event 이름을 추가
@@ -56,5 +56,16 @@ export class ChatsGateway
     // username을 db에 적재
     socket.broadcast.emit('user_connected', username);
     return username;
+  }
+
+  @SubscribeMessage('submit_chat')
+  handleSubmitChat(
+    @MessageBody() chat: string,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    socket.broadcast.emit('new_chat', {
+      chat,
+      username: socket.id,
+    });
   }
 }
