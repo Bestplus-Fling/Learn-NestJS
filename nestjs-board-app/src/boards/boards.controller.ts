@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BoardStatus, type Board } from 'src/boards/boards.model';
 import { BoardsService } from 'src/boards/boards.service';
@@ -21,6 +23,7 @@ export class BoardsController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createBoard(@Body() request: CreateBoardDto): Board {
     return this.boardsService.createBoard(request);
   }
