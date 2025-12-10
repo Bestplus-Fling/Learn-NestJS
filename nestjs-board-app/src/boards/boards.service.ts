@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { type Board, BoardStatus } from 'src/boards/boards.model';
 import { CreateBoardDto } from 'src/boards/dto/create-board.dto';
 import { v1 as uuid } from 'uuid';
@@ -11,8 +11,8 @@ export class BoardsService {
     return this.boards;
   }
 
-  createBoard(createBoardDto: CreateBoardDto) {
-    const { title, description } = createBoardDto;
+  createBoard(request: CreateBoardDto) {
+    const { title, description } = request;
 
     const board: Board = {
       id: uuid(),
@@ -22,6 +22,15 @@ export class BoardsService {
     };
 
     this.boards.push(board);
+    return board;
+  }
+
+  getBoardById(boardId: string): Board {
+    const board = this.boards.find((board) => board.id == boardId);
+
+    if (!board) {
+      throw new NotFoundException('존재하지 않는 게시글입니다.');
+    }
     return board;
   }
 }
