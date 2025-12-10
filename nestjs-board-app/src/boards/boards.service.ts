@@ -25,12 +25,16 @@ export class BoardsService {
     return board;
   }
 
-  getBoardById(boardId: string): Board {
-    const board = this.boards.find((board) => board.id == boardId);
+  getBoardById(id: string): Board {
+    const board = this.boards.find((board) => board.id == id);
 
     if (!board) {
       throw new NotFoundException('존재하지 않는 게시글입니다.');
     }
     return board;
+  }
+
+  deleteBoard(id: string): void {
+    this.boards = this.boards.filter((board) => board.id !== id);
   }
 }
