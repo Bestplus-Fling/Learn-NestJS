@@ -7,9 +7,10 @@ import { CreateBoardDto } from 'src/boards/dto/create-board.dto';
 @Injectable()
 export class BoardsService {
   constructor(private readonly boardRepository: BoardRepository) {}
-  // getAllBoards(): Board[] {
-  //   return this.boards;
-  // }
+
+  async getAllBoards(): Promise<Board[]> {
+    return this.boardRepository.find();
+  }
 
   async createBoard(request: CreateBoardDto): Promise<Board> {
     return this.boardRepository.createBoard(request);
