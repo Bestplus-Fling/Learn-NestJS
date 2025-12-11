@@ -14,6 +14,7 @@ import { BoardStatus } from 'src/boards/board-status.enum';
 import { Board } from 'src/boards/board.entity';
 import { BoardsService } from 'src/boards/boards.service';
 import { CreateBoardDto } from 'src/boards/dto/create-board.dto';
+import { BoardStatusValidationPipe } from 'src/boards/pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -40,11 +41,11 @@ export class BoardsController {
     return this.boardsService.deleteBoard(id);
   }
 
-  // @Patch('/:id/status')
-  // updateBoardStatus(
-  //   @Param('id') id: string,
-  //   @Body('status') status: BoardStatus,
-  // ): Board {
-  //   return this.boardsService.updateBoardStatus(id, status);
-  // }
+  @Patch('/:id/status')
+  updateBoardStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+  ): Promise<Board> {
+    return this.boardsService.updateBoardStatus(id, status);
+  }
 }
