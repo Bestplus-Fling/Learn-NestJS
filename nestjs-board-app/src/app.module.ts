@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { BoardsModule } from './boards/boards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { typeORMConfig } from 'src/config/typeorm.config';
 
 @Module({
   imports: [
@@ -10,18 +11,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: Number(config.get('DB_PORT')),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: 'board-app',
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        typeORMConfig(configService),
     }),
     BoardsModule,
   ],
